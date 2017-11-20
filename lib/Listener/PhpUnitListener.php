@@ -29,11 +29,11 @@ class PhpUnitListener implements TestListener
         $userKey,
         $userSecret,
         $endpoint = 'ingest.clairvoyant.magiumlib.com',
-        GenericListenerAdapter $adapter = null
+        GenericClairvoyantAdapter $adapter = null
     )
     {
         if ($adapter === null) {
-            $this->adapter = new GenericListenerAdapter(
+            $this->adapter = new GenericClairvoyantAdapter(
                 self::TEST_TYPE_PHPUNIT,
                 $projectId,
                 $userKey,

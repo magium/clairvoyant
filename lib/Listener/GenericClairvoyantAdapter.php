@@ -4,7 +4,7 @@ namespace Magium\Clairvoyant\Listener;
 
 use Magium\Clairvoyant\Request;
 
-class GenericListenerAdapter implements MagiumListenerAdapterInterface
+class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
 {
 
     protected $testResult;
