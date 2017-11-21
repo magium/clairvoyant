@@ -6,6 +6,7 @@ interface MagiumListenerAdapterInterface
 {
 
     const TYPE_TEST_RESULT = 'test-result';
+    const TYPE_LOG = 'log';
     const TYPE_TEST_STATUS = 'test-status';
     const TYPE_NOTIFICATION = 'test-notification';
     const TYPE_TEST_CHECKPOINT = 'test-checkpoint';

@@ -13,13 +13,17 @@
       "psr-4": {
         "Magium\\Clairvoyant\\": "lib",
         "Magium\\Clairvoyant\\Tests\\": "tests"
-      }
+      },
+    "files": [
+      "registration.php"
+    ]
   },
   "require": {
     "psr/log": "^1.0",
     "guzzlehttp/guzzle": "^6.3"
   },
   "require-dev": {
-    "phpunit/phpunit": "^5|^6"
+    "phpunit/phpunit": "^5|^6",
+    "magium/magium": "^1.1"
   }
 }

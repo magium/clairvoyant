@@ -17,7 +17,7 @@ class Request
     protected $endpoint;
     protected $key;
     protected $secret;
-    protected $scheme;
+    protected $scheme = 'https';
 
     public function __construct($endpoint, $key, $secret)
     {

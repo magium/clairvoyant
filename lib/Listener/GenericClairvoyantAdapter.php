@@ -2,7 +2,11 @@
 
 namespace Magium\Clairvoyant\Listener;
 
+use Magium\AbstractTestCase;
+use Magium\Clairvoyant\Logger\ClairvoyantWriter;
+use Magium\Clairvoyant\Registration;
 use Magium\Clairvoyant\Request;
+use Magium\Util\Log\Logger;
 
 class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
 {
@@ -35,6 +39,7 @@ class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
         $this->userKey = $userKey;
         $this->userSecret = $userSecret;
         $this->endpoint = $endpoint;
+        Registration::getInstance()->setAdapter($this);
     }
 
     public function setTestType($testType)
@@ -45,6 +50,17 @@ class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
     public function getTestType()
     {
         return $this->testType;
+    }
+
+    public function configureMagium(AbstractTestCase $testCase)
+    {
+        $writers = $testCase->getLogger()->getWriters();
+        foreach ($writers as $writer) {
+            if ($writer instanceof ClairvoyantWriter) return;
+        }
+        $logger = $testCase->getLogger();
+        $logger->info('Magium Clairvoyant attached logging handler');
+        $logger->addWriter(new ClairvoyantWriter($this));
     }
 
     public function reset()
@@ -95,7 +111,6 @@ class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
                 'value' => $checkpoint
             ]
         ]);
-
     }
 
     public function addError($testResult, $message, $type, $value)
@@ -189,19 +204,18 @@ class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
 
     public function send()
     {
+
         $payload = [
             'type' => $this->testType,
             'title' => $this->testTitle,
             'description' => $this->testDescription,
             'id' => $this->testId,
             'events' => $this->events,
-            'version' => '1',
             'project_id' => $this->projectId,
             'invoked_test' => $this->invokedTest,
             'characteristics' => $this->characteristics,
             'test_result' => $this->testResult,
         ];
-
 
         $payload['test_run_id'] = self::getTestRunId();
 
@@ -211,5 +225,6 @@ class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
             $this->userSecret
         );
         $request->push([$payload]);
+        $this->reset();
     }
 }
