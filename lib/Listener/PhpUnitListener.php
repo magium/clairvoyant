@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestListener;
 use PHPUnit\Framework\TestSuite;
 use PHPUnit\Framework\Warning;
 
-class PhpUnitListener implements TestListener
+class PhpUnitListener implements TestListener, MagiumPHPUnitListener
 {
 
     const TEST_TYPE_PHPUNIT = 'phpunit';
@@ -28,7 +28,7 @@ class PhpUnitListener implements TestListener
         $projectId,
         $userKey,
         $userSecret,
-        $endpoint = 'ingest.clairvoyant.magiumlib.com',
+        $endpoint = 'https://api.clairvoyant.magiumlib.com/',
         GenericClairvoyantAdapter $adapter = null
     )
     {
@@ -38,10 +38,16 @@ class PhpUnitListener implements TestListener
                 $projectId,
                 $userKey,
                 $userSecret,
+                $this,
                 $endpoint
             );
         }
         $this->adapter->reset();
+    }
+
+    public function getAdapter()
+    {
+        return $this->adapter;
     }
 
     public function markKeyCheckpoint($checkpoint)
@@ -57,11 +63,6 @@ class PhpUnitListener implements TestListener
     public function setFormatter($formatter)
     {
         // Ignore -
-    }
-
-    public function shutdown()
-    {
-        $this->adapter->send(); // Final try, just in case (this should never actually send data)
     }
 
     public function addError(Test $test, Exception $e, $time)
@@ -139,7 +140,6 @@ class PhpUnitListener implements TestListener
 
     public function startTest(Test $test)
     {
-        $this->adapter->reset();
         $testName = get_class($test);
         $invokedTest = get_class($test);
         if ($test instanceof TestCase) {

@@ -3,9 +3,8 @@
 namespace Magium\Clairvoyant\Listener;
 
 use Exception;
-use PHPUnit\Framework\Test;
 
-class PhpUnit5Listener implements \PHPUnit_Framework_TestListener
+class PhpUnit5Listener implements \PHPUnit_Framework_TestListener, MagiumPHPUnitListener
 {
 
     const TEST_TYPE_PHPUNIT = 'phpunit';
@@ -23,7 +22,7 @@ class PhpUnit5Listener implements \PHPUnit_Framework_TestListener
         $projectId,
         $userKey,
         $userSecret,
-        $endpoint = 'ingest.clairvoyant.magiumlib.com',
+        $endpoint = 'https://api.clairvoyant.magiumlib.com',
         GenericClairvoyantAdapter $adapter = null
     )
     {
@@ -33,10 +32,16 @@ class PhpUnit5Listener implements \PHPUnit_Framework_TestListener
                 $projectId,
                 $userKey,
                 $userSecret,
+                $this,
                 $endpoint
             );
         }
         $this->adapter->reset();
+    }
+
+    public function getAdapter()
+    {
+        return $this->adapter;
     }
 
     public function markKeyCheckpoint($checkpoint)
@@ -52,11 +57,6 @@ class PhpUnit5Listener implements \PHPUnit_Framework_TestListener
     public function setFormatter($formatter)
     {
         // Ignore -
-    }
-
-    public function shutdown()
-    {
-        $this->adapter->send(); // Final try, just in case (this should never actually send data)
     }
 
     public function addError(\PHPUnit_Framework_Test $test, Exception $e, $time)

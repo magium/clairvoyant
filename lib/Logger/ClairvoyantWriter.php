@@ -28,7 +28,9 @@ class ClairvoyantWriter implements WriterInterface
 
     public function write(array $event)
     {
-        $event['extra']['type'] = MagiumListenerAdapterInterface::TYPE_LOG;
+        if (!isset($event['extra']['type'])) {
+            $event['extra']['type'] = MagiumListenerAdapterInterface::TYPE_LOG;
+        }
         $this->adapter->write($event);
     }
 

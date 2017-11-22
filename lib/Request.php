@@ -4,6 +4,7 @@ namespace Magium\Clairvoyant;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\Uri;
 use Magium\Clairvoyant\Signer\Signer;
 use QueryAuth\Credentials\Credentials;
 use QueryAuth\Factory;
@@ -17,7 +18,6 @@ class Request
     protected $endpoint;
     protected $key;
     protected $secret;
-    protected $scheme = 'https';
 
     public function __construct($endpoint, $key, $secret)
     {
@@ -33,13 +33,14 @@ class Request
      * @return array|Response|null
      */
 
-    protected function doRequest($url, array $payload = null)
+    protected function doRequest($path, array $payload = null)
     {
             if ($payload) {
                 $payload = json_encode($payload);
             }
 
-            $url = $this->scheme . '://' . $this->endpoint . '/' . $url;
+            $uri = new Uri($this->endpoint);
+            $url = $uri->withPath($path);
 
             $signer = $this->getSigner();
 

@@ -10,6 +10,8 @@ class Registration implements RegistrationCallbackInterface
 {
     private $adapter;
 
+    private $addListener;
+
     private static $self;
 
     public static function getInstance()
@@ -25,10 +27,35 @@ class Registration implements RegistrationCallbackInterface
         $this->adapter = $adapter;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getAddListener()
+    {
+        return $this->addListener;
+    }
+
+    /**
+     * @param mixed $addListener
+     */
+    public function setAddListener($addListener)
+    {
+        $this->addListener = $addListener;
+    }
+
+    /**
+     * @return GenericClairvoyantAdapter|null
+     */
+
+    public function getAdapter()
+    {
+        return $this->adapter;
+    }
+
     public function register(AbstractTestCase $testCase)
     {
         if ($this->adapter instanceof GenericClairvoyantAdapter) {
-            $this->adapter->configureMagium($testCase);
+            $this->adapter->configureMagium($testCase, $this->addListener);
         }
     }
 }

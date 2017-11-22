@@ -10,6 +10,7 @@ interface MagiumListenerAdapterInterface
     const TYPE_TEST_STATUS = 'test-status';
     const TYPE_NOTIFICATION = 'test-notification';
     const TYPE_TEST_CHECKPOINT = 'test-checkpoint';
+    const TYPE_PAGE_INFORMATION = 'page-information';
 
     const TEST_RESULT_PASSED = 'passed';
     const TEST_RESULT_ERROR = 'error';
@@ -22,5 +23,22 @@ interface MagiumListenerAdapterInterface
 
     const TEST_STATUS_STARTED = 'started';
     const TEST_STATUS_COMPLETED = 'completed';
+
+    public function __construct(
+        $testType,
+        $projectId,
+        $userKey,
+        $userSecret,
+        MagiumPHPUnitListener $listener,
+        $endpoint = 'https://ingest.clairvoyant.magiumlib.com/'
+    );
+
+    public function reset();
+
+    public function setCharacteristic($type, $value);
+
+    public function write(array $event);
+
+    public function send();
 
 }

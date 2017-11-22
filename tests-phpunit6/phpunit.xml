@@ -9,6 +9,7 @@
                 <string>59fcdaabe77989302f288202</string>
                 <string>user-key</string>
                 <string>user-secret</string>
+                <string>http://api.clairvoyant.dev.magiumlib.com/</string>
             </arguments>
         </listener>
     </listeners>

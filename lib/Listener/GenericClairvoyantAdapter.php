@@ -6,7 +6,6 @@ use Magium\AbstractTestCase;
 use Magium\Clairvoyant\Logger\ClairvoyantWriter;
 use Magium\Clairvoyant\Registration;
 use Magium\Clairvoyant\Request;
-use Magium\Util\Log\Logger;
 
 class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
 {
@@ -25,13 +24,17 @@ class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
     protected $testName;
     protected $invokedTest;
     protected $testType;
+    protected $listener;
+
+    private $messageHashes = [];
 
     public function __construct(
         $testType,
         $projectId,
         $userKey,
         $userSecret,
-        $endpoint = 'ingest.clairvoyant.magiumlib.com'
+        MagiumPHPUnitListener $listener,
+        $endpoint = 'https://ingest.clairvoyant.magiumlib.com/'
     )
     {
         $this->testType = $testType;
@@ -39,7 +42,9 @@ class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
         $this->userKey = $userKey;
         $this->userSecret = $userSecret;
         $this->endpoint = $endpoint;
+        $this->listener = $listener;
         Registration::getInstance()->setAdapter($this);
+        register_shutdown_function([$this, 'shutdown']);
     }
 
     public function setTestType($testType)
@@ -52,15 +57,22 @@ class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
         return $this->testType;
     }
 
-    public function configureMagium(AbstractTestCase $testCase)
+    public function configureMagium(AbstractTestCase $testCase, $addListener = false)
     {
         $writers = $testCase->getLogger()->getWriters();
         foreach ($writers as $writer) {
             if ($writer instanceof ClairvoyantWriter) return;
         }
         $logger = $testCase->getLogger();
-        $logger->info('Magium Clairvoyant attached logging handler');
         $logger->addWriter(new ClairvoyantWriter($this));
+        $logger->info('Magium Clairvoyant attached logging handler');
+
+        $testCase->setTypePreference(MagiumListenerAdapterInterface::class, GenericClairvoyantAdapter::class);
+        $testCase->getDi()->instanceManager()->addSharedInstance($this, MagiumListenerAdapterInterface::class);
+        $testCase->getDi()->instanceManager()->addSharedInstance($this, GenericClairvoyantAdapter::class);
+        if ($addListener) {
+            $testCase->getTestResultObject()->addListener($this->listener);
+        }
     }
 
     public function reset()
@@ -102,17 +114,6 @@ class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
         ]);
     }
 
-    public function markKeyCheckpoint($checkpoint)
-    {
-        $this->write([
-            'message' => $checkpoint,
-            'extra' => [
-                'type' => self::TYPE_TEST_CHECKPOINT,
-                'value' => $checkpoint
-            ]
-        ]);
-    }
-
     public function addError($testResult, $message, $type, $value)
     {
         $this->writeGeneralTestResult($message, $type, $value, $testResult);
@@ -150,27 +151,41 @@ class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
 
     public function endTestSuite()
     {
-        $this->send(); // Just in case.
+
     }
 
     public function startTest($testName, $invokedTest, $testClass, $type, $value)
     {
-        $this->reset();
-        $this->testName = $testName;
-        $this->invokedTest = $invokedTest;
+        /*
+         * Because of the send() call here it is possible that if two items (i.e. Clairvoyant and the Magium logger)
+         * both call startTest() and the second call triggers a send of the first call.  This has the effect of splitting
+         * the test result over two API calls, which is just dumb.
+         */
+        if ($testName != $this->testName) {
+            $this->send();
 
-        $this->write([
-            'message' => 'Test started',
-            'extra' => [
-                'type' => $type,
-                'value' => $value,
-                'class' => $testClass,
-                'name' => $testName
-            ]
-        ]);
+            $this->reset();
+            $this->testName = $testName;
+            $this->invokedTest = $invokedTest;
+
+            $this->write([
+                'message' => 'Test started',
+                'extra' => [
+                    'type' => $type,
+                    'value' => $value,
+                    'class' => $testClass,
+                    'name' => $testName
+                ]
+            ]);
+        }
     }
 
     public function endTest()
+    {
+        // No send().  We do that at the start of the next test or on __destruct()
+    }
+
+    public function shutdown()
     {
         $this->send();
     }
@@ -182,6 +197,7 @@ class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
 
     public function write(array $event)
     {
+
         if (isset($event['extra']['type']) && $event['extra']['type'] == 'characteristic') {
             $this->characteristics[$event['extra']['characteristic']] = $event['extra']['value'];
             return;
@@ -189,6 +205,15 @@ class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
         if (isset($event['extra'][self::TYPE_TEST_RESULT])) {
             $this->testResult = $event['extra'][self::TYPE_TEST_RESULT];
         }
+        // Sometimes messages may come in from multiple sources.  This should stop that
+
+        $message = json_encode($event);
+        $hash = sha1($message);
+        if (in_array($hash, $this->messageHashes)) {
+            return;
+        }
+        $this->messageHashes[] = $hash;
+
         $event['microtime'] = microtime(true);
         $event['unix_timestamp'] = time();
         $this->events[] = $event;
@@ -204,6 +229,8 @@ class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
 
     public function send()
     {
+        // Nothing has happened
+        if (!count($this->events)) return;
 
         $payload = [
             'type' => $this->testType,
@@ -217,7 +244,7 @@ class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
             'test_result' => $this->testResult,
         ];
 
-        $payload['test_run_id'] = self::getTestRunId();
+        $payload['test_run_id'] = $this->getTestRunId();
 
         $request = new Request(
             $this->endpoint,
