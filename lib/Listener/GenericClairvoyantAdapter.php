@@ -47,6 +47,11 @@ class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
         register_shutdown_function([$this, 'shutdown']);
     }
 
+    public function getListener()
+    {
+        return $this->listener;
+    }
+
     public function setTestType($testType)
     {
         $this->testType = $testType;

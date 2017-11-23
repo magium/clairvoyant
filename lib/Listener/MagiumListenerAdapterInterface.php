@@ -33,6 +33,8 @@ interface MagiumListenerAdapterInterface
         $endpoint = 'https://ingest.clairvoyant.magiumlib.com/'
     );
 
+    public function getListener();
+
     public function reset();
 
     public function setCharacteristic($type, $value);
