@@ -6,6 +6,7 @@ use Magium\AbstractTestCase;
 use Magium\Clairvoyant\Logger\ClairvoyantWriter;
 use Magium\Clairvoyant\Registration;
 use Magium\Clairvoyant\Request;
+use Magium\Util\Log\Logger;
 
 class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
 {
@@ -64,11 +65,13 @@ class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
 
     public function configureMagium(AbstractTestCase $testCase, $addListener = false)
     {
-        $writers = $testCase->getLogger()->getWriters();
+        $logger = $testCase->getLogger();
+        /** @var $logger Logger */
+        $this->testRunId = $logger->getTestRunId();
+        $writers = $logger->getWriters();
         foreach ($writers as $writer) {
             if ($writer instanceof ClairvoyantWriter) return;
         }
-        $logger = $testCase->getLogger();
         $logger->addWriter(new ClairvoyantWriter($this));
         $logger->info('Magium Clairvoyant attached logging handler');
 

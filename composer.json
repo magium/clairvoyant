@@ -24,6 +24,6 @@
     "guzzlehttp/guzzle": "^6.3"
   },
   "require-dev": {
-    "magium/magium": "dev-master#2a245769bed7d2b1c5af31494bb464dc80deadc6"
+    "magium/magium": "dev-master#6cca056c5cb5e19a9e5b1afe3de8004542e042b0"
   }
 }
