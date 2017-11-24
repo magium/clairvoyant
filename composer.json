@@ -1,6 +1,6 @@
 {
   "name": "magium/clairvoyant",
-  "description": "An API for reporting on PHPUnit and Magium tests at https://www.magiumlib.com/",
+  "description": "An API for reporting on PHPUnit and Magium tests at https://clairvoyant.magiumlib.com/",
   "minimum-stability": "stable",
   "license": "Apache2.0",
   "authors": [
@@ -24,6 +24,6 @@
     "guzzlehttp/guzzle": "^6.3"
   },
   "require-dev": {
-    "magium/magium": "dev-master#6cca056c5cb5e19a9e5b1afe3de8004542e042b0"
+    "magium/magium": "^1"
   }
 }
