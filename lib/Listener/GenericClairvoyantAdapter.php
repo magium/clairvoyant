@@ -26,6 +26,7 @@ class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
     protected $invokedTest;
     protected $testType;
     protected $listener;
+    protected $criticalTest = false;
 
     private $messageHashes = [];
 
@@ -51,6 +52,11 @@ class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
     public function getListener()
     {
         return $this->listener;
+    }
+
+    public function markTestCritical()
+    {
+        $this->criticalTest = true;
     }
 
     public function setTestType($testType)
@@ -85,6 +91,7 @@ class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
 
     public function reset()
     {
+        $this->criticalTest = true;
         $this->testDescription
             = $this->testName
             = $this->testTitle = null;

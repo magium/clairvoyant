@@ -43,4 +43,6 @@ interface MagiumListenerAdapterInterface
 
     public function send();
 
+    public function markTestCritical();
+
 }
