@@ -257,6 +257,7 @@ class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
             'invoked_test' => $this->invokedTest,
             'characteristics' => $this->characteristics,
             'test_result' => $this->testResult,
+            'critical' => $this->criticalTest
         ];
 
         $payload['test_run_id'] = $this->getTestRunId();
