@@ -4,6 +4,7 @@ namespace Magium\Clairvoyant\Logger;
 
 use Magium\Clairvoyant\Listener\GenericClairvoyantAdapter;
 use Magium\Clairvoyant\Listener\MagiumListenerAdapterInterface;
+use Zend\Log\Logger;
 use Zend\Log\Writer\WriterInterface;
 
 class ClairvoyantWriter implements WriterInterface
@@ -28,6 +29,9 @@ class ClairvoyantWriter implements WriterInterface
 
     public function write(array $event)
     {
+        if (!isset($event['priority']) || $event['priority'] > Logger::NOTICE) { // NOTICE and below
+            return;
+        }
         if (!isset($event['extra']['type'])) {
             $event['extra']['type'] = MagiumListenerAdapterInterface::TYPE_LOG;
         }

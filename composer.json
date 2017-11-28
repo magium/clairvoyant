@@ -19,7 +19,7 @@
     ]
   },
   "require-dev": {
-    "magium/magium": "^1"
+    "magium/magium": "^1.2.0"
   },
   "require": {
     "psr/log": "^1.0",
@@ -27,7 +27,7 @@
     "guzzlehttp/guzzle": "^6.3"
   },
   "suggest": {
-    "magium/magium": "^1",
+    "magium/magium": "^1.2.0",
     "magium/clairvoyant-generic-tests": "^1"
   }
 }

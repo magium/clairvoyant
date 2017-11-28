@@ -213,6 +213,9 @@ class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
     public function write(array $event)
     {
 
+        if (!isset($event['priority']) || $event['priority'] > \Zend\Log\Logger::NOTICE) { // NOTICE and below
+            return;
+        }
         if (isset($event['extra']['type']) && $event['extra']['type'] == 'characteristic') {
             $this->characteristics[$event['extra']['characteristic']] = $event['extra']['value'];
             return;
