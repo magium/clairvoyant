@@ -10,10 +10,10 @@ class MagiumEnvironmentFactory
 
     public function factory()
     {
-        $key = getenv('MAGIUM_CLAIRVOYANT_KEY');
-        $secret = getenv('MAGIUM_CLAIRVOYANT_SECRET');
-        $project = getenv('MAGIUM_CLAIRVOYANT_PROJECT_ID');
-        $endpoint = getenv('MAGIUM_CLAIRVOYANT_ENDPOINT');
+        $key = $_SERVER['MAGIUM_CLAIRVOYANT_KEY'];
+        $secret = $_SERVER['MAGIUM_CLAIRVOYANT_SECRET'];
+        $project = $_SERVER['MAGIUM_CLAIRVOYANT_PROJECT_ID'];
+        $endpoint = isset($_SERVER['MAGIUM_CLAIRVOYANT_ENDPOINT'])?$_SERVER['MAGIUM_CLAIRVOYANT_ENDPOINT']:false;
         if (!$key) {
             throw new \Exception('Missing environment variable MAGIUM_CLAIRVOYANT_KEY');
         }

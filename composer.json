@@ -10,20 +10,24 @@
     }
   ],
   "autoload": {
-      "psr-4": {
-        "Magium\\Clairvoyant\\": "lib",
-        "Magium\\Clairvoyant\\Tests\\": "tests"
-      },
+    "psr-4": {
+      "Magium\\Clairvoyant\\": "lib",
+      "Magium\\Clairvoyant\\Tests\\": "tests"
+    },
     "files": [
       "registration.php"
     ]
+  },
+  "require-dev": {
+    "magium/magium": "^1"
   },
   "require": {
     "psr/log": "^1.0",
     "phpunit/phpunit": "^5|^6",
     "guzzlehttp/guzzle": "^6.3"
   },
-  "require-dev": {
-    "magium/magium": "^1"
+  "suggest": {
+    "magium/magium": "^1",
+    "magium/clairvoyant-generic-tests": "^1"
   }
 }

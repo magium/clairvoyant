@@ -19,7 +19,7 @@ class ListenerConfigurationTest extends AbstractTestCase
 
     public function testListenerCausesAFailure()
     {
-        $a = 2;
+        $a = 1;
         self::assertEquals(1, $a);
     }
 
