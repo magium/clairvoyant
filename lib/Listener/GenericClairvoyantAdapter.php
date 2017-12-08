@@ -233,7 +233,6 @@ class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
         $this->messageHashes[] = $hash;
 
         $event['microtime'] = microtime(true);
-        $event['unix_timestamp'] = time();
         $this->events[] = $event;
     }
 
