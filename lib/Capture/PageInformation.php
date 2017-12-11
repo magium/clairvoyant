@@ -4,6 +4,7 @@ namespace Magium\Clairvoyant\Capture;
 
 use Facebook\WebDriver\WebDriver;
 use Magium\Clairvoyant\Listener\MagiumListenerAdapterInterface;
+use Zend\Log\Logger;
 
 class PageInformation
 {
@@ -28,6 +29,7 @@ class PageInformation
         $performance = $this->webDriver->executeScript('return performance');
         $entries = $this->webDriver->executeScript('return performance.getEntries()');
         $this->adapter->write([
+            'priority' => Logger::NOTICE,
             'extra' => [
                 'type' => MagiumListenerAdapterInterface::TYPE_PAGE_INFORMATION,
                 'performance' => $performance,
