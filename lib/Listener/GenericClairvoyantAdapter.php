@@ -54,6 +54,11 @@ class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
         return $this->listener;
     }
 
+    public function setTestDescription($description)
+    {
+        $this->testDescription = $description;
+    }
+
     public function markTestCritical()
     {
         $this->criticalTest = true;
