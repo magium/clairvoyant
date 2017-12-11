@@ -54,9 +54,9 @@ class GenericClairvoyantAdapter implements MagiumListenerAdapterInterface
         return $this->listener;
     }
 
-    public function setTestName($name)
+    public function setTestTitle($name)
     {
-        $this->testName = $name;
+        $this->testTitle = $name;
     }
 
     public function setTestDescription($description)
